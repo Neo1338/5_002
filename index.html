@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главное дз по Интерфейсам</title>
+    <style>
+        body{
+            background-color: #a19c9c;
+        }
+
+        .pincode { 
+            text-align: center;
+            padding: 20px 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        p{
+            font-size: 30px;
+            font-weight: 500;
+        }
+
+        .pincode input[type="number"] {
+            display: inline-block;
+            width: 490px;
+            height: 70px;
+            line-height: 50px;
+            text-align: center;
+            border: 5px solid #5a5a5a;
+            color: #000;
+            padding: 16px 0px;
+            margin: 0 10px;
+            font-size: 120px;
+            font-weight: 700;
+            outline: none;
+            background-color: #fff;
+            -moz-appearance: textfield;
+            -webkit-appearance: textfield;
+            appearance: textfield;
+            box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+            -webkit-text-security: disc;
+        }
+
+        .number input[type="number"]{
+            width: 65px;
+            margin: 0 3px;
+        }
+
+        .number {
+            display: none;
+        }        
+
+        .pincode input[type="number"]::-webkit-outer-spin-button,
+        .pincode input[type="number"]::-webkit-inner-spin-button {
+            display: none;
+        }
+        
+        .pincode input[type="number"]:focus {
+            border: 5px solid #1dd216;
+        }
+
+        .button-submit{
+            display: block;
+            font-size: 40px;
+            font-weight: 600;
+            border-radius: 10px;
+            width: 300px;
+            height: 70px;
+            margin: 20px auto;
+            background-color: yellow;
+            box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
+        }
+
+        .error{
+            display: none;
+            color: red;
+            font-size: 15px;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        .valid{
+            display: block;
+            color: greenyellow;
+            font-size: 30px;
+            font-weight: 500;
+            margin-top: 5px;
+        }        
+
+    </style>
+</head>
+<body>
+    <div class="pincode">
+        <form action="" class="main-form">
+            <p><label for="password">Пин-код не был установлен в системе, пожалуйста создайте 6-ти значный пинкод:</label></p>
+            <input autofocus name="password" type="number" pattern="[0-9]" id="password"  value="" maxlength="6">
+            <div class="number">
+                <input type="number" maxlength="1" pattern="[0-9]">
+                <input type="number" maxlength="1" pattern="[0-9]">
+                <input type="number" maxlength="1" pattern="[0-9]">
+                <input type="number" maxlength="1" pattern="[0-9]">
+                <input type="number" maxlength="1" pattern="[0-9]">
+                <input type="number" maxlength="1" pattern="[0-9]">
+            </div>
+            <p class="error">Введен не допустимый символ! Допускаются только цифры</p>
+            <button type="submit" class="button-submit">Установить</button>
+        </form>
+        
+    </div>
+    <script>
+        const form = document.querySelector('.main-form');
+        const errorAlert = document.querySelector('.error');
+        const textHead = document.querySelector('label');
+        const submitButton = document.querySelector('button');
+        const passwordCode = document.getElementById('password');
+        const numberCode = document.querySelector('.number');
+        const numberPlace = document.querySelectorAll('div > input');
+
+        function getPinInput(){
+            let pin = '';
+            for (let i = 0; i < 6; i++){
+                pin += numberCode.children[i].value;
+            }
+            return pin;
+            debugger;
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();	
+            if(passwordCode.value.length === 6){
+                localStorage.setItem('password', String(form.elements.password.value));
+                passwordCode.value = "";
+                passwordCode.style.cssText = 'display: none;';
+                numberCode.style.cssText = 'display: inline-block;';
+                textHead.textContent = 'Установлен пароль! Введите его для разблокировки:';
+                submitButton.textContent = 'Проверить';
+                numberCode.children[0].focus();
+            } else {
+                if(submitButton.textContent === 'Проверить'){
+                    let pin = getPinInput();
+                    if(localStorage.getItem('password') === pin){
+                        errorAlert.textContent = 'Вы ввели правильный пинкод';
+                        errorAlert.classList.remove('error'); 
+                        errorAlert.classList.add('valid');
+                        errorAlert.style.cssText = 'display: block;';
+                        submitButton.disabled = true;
+                    } else {
+                        errorAlert.textContent = 'Вы ввели не правильный пинкод';
+                        errorAlert.classList.remove('valid'); 
+                        errorAlert.classList.add('error');
+                        errorAlert.style.cssText = 'display: block;';
+                    }
+                } else alert('Введите 6 цифр!');
+            }
+        });
+
+        function checkKeyDown(children, value){
+            if(children.tagName === 'INPUT' && !(children.id === 'password')){
+                children.value = '';
+            }
+        }
+
+        function checkKeyUp(children, value){
+            if(children.tagName === 'INPUT'){
+                let val = children.value;
+                if('0123456789'.indexOf(value) < 0){
+                    errorAlert.style.cssText = 'display: block;';
+                    children.value = '';
+                } else errorAlert.style.cssText = 'display: none;';
+                if (!(children.id === 'password')){
+                    if (children.nextElementSibling !== null) {
+                        children.nextElementSibling.focus();
+                    }
+                } else {
+                    if (children.value.length > children.maxLength) {
+                        children.value = children.value.slice(0, children.maxLength);
+                    }
+                }
+            }
+        }
+
+        window.addEventListener('keydown', (e) =>{
+            checkKeyDown(e.target, e.key);
+        });
+
+        window.addEventListener('keyup', (e) =>{
+            checkKeyUp(e.target, e.key);
+        });
+        
+        numberCode.children[0].onpaste = function(event){
+            event.preventDefault();
+            let text = event.clipboardData.getData('text/plain');
+            if (text.length === 6){
+                for (let i = 0; i < 6; i++){
+                    numberCode.children[i].value = Number(text[i]);
+                    numberCode.children[i].focus();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
