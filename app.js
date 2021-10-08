@@ -60,21 +60,18 @@ function checkKeyDown(children, value){
 }
 
 function checkKeyUp(children, value){
-    if(children.tagName === 'INPUT'){
-        let val = children.value;
-        if(value.match(/\d/g)){    //if('0123456789'.indexOf(value) < 0){
-            errorAlert.style.cssText = 'display: block;';
-            children.value = '';
-        } else errorAlert.style.cssText = 'display: none;';
-        if (children.id !== 'password'){
-            if (children.nextElementSibling !== null) {
-                children.nextElementSibling.focus();
-            }
+    if(value.match(/\d/g)){    //if('0123456789'.indexOf(value) < 0){
+        errorAlert.style.cssText = 'display: block;';
+        children.value = '';
+    } else {
+        errorAlert.style.cssText = 'display: none;';
+        if (children.id !== 'password' && children.nextElementSibling !== null){
+            children.nextElementSibling.focus();
         } else {
             if (children.value.length > children.maxLength) {
                 children.value = children.value.slice(0, children.maxLength);
             }
-        }
+        }        
     }
 }
 
@@ -83,7 +80,9 @@ window.addEventListener('keydown', (e) =>{
 });
 
 window.addEventListener('keyup', (e) =>{
-    checkKeyUp(e.target, e.key);
+    if(e.target.tagName === 'INPUT'){
+        checkKeyUp(e.target, e.key);
+    }
 });
 
 numberCode.children[0].onpaste = function(event){
