@@ -54,29 +54,30 @@ form.addEventListener('submit', (e) => {
 });
 
 function checkKeyDown(children, value){
-    if(children.tagName === 'INPUT' && children.id !== 'password'){
+    if(children.id !== 'password'){
         children.value = '';
     }
 }
 
-function checkKeyUp(children, value){
-    if(value.match(/\d/g)){    //if('0123456789'.indexOf(value) < 0){
+function checkKeyUp(children, value) {
+    if (!value.match(/\d/g)) {
         errorAlert.style.cssText = 'display: block;';
         children.value = '';
-    } else {
-        errorAlert.style.cssText = 'display: none;';
-        if (children.id !== 'password' && children.nextElementSibling !== null){
-            children.nextElementSibling.focus();
-        } else {
-            if (children.value.length > children.maxLength) {
-                children.value = children.value.slice(0, children.maxLength);
-            }
-        }        
+        return;
+    }
+    errorAlert.style.cssText = 'display: none;';
+    if (children.value.length > children.maxLength) {
+        children.value = children.value.slice(0, children.maxLength);
+    }
+    if (children.id !== 'password') {
+        children.nextElementSibling?.focus();
     }
 }
 
 window.addEventListener('keydown', (e) =>{
-    checkKeyDown(e.target, e.key);
+    if(e.target.tagName === 'INPUT'){
+        checkKeyDown(e.target, e.key);
+    }
 });
 
 window.addEventListener('keyup', (e) =>{
